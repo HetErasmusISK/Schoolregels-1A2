@@ -42,6 +42,13 @@
         /* Student list */
         .student-card { background: var(--bg-card); padding: 14px 16px; border-radius: 16px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-bottom: 10px; transition: border-color 0.15s, box-shadow 0.15s; }
         .student-card:hover { border-color: rgba(59,111,212,0.3); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+        .student-card.card-green  { background: #edfaf3; border-color: #b6efd0; }
+        .student-card.card-orange { background: #fff8e6; border-color: #fde9a2; }
+        .student-card.card-red    { background: #fff0f2; border-color: #fdc9d0; }
+        .student-card.card-red .student-name { color: #b01030; }
+        .student-card.card-red .stat-item    { color: #c0304a; }
+        .student-card.card-green .student-name { color: #0a6640; }
+        .student-card.card-orange .student-name { color: #7a4500; }
         .student-card-left { display: flex; align-items: center; gap: 14px; }
         .status-bar { width: 4px; height: 48px; border-radius: 4px; flex-shrink: 0; }
         .student-name { font-size: 17px; font-weight: 600; color: var(--text); }
@@ -360,10 +367,13 @@ function buildList() {
             const te = s.records.filter(r=>r.type==='telefoon-ingenomen').length;
             const vg = s.records.filter(r=>r.type==='vergeten-spullen').reduce((a,r)=>a+(r.forgottenItems?.length||0),0);
             const statuses = [getTeLaatStatus(tl).color, getSpijbelStatus(sp).color, getUitgestuurdStatus(ui).color, getTelefoonStatus(te).color];
-            const col = statuses.includes('red') ? '#e63560' : statuses.includes('orange') ? '#d97706' : '#059669';
-            return `<div class="student-card" data-student-id="${s.id}">
+            const allZero = tl === 0 && sp === 0 && ui === 0 && te === 0;
+            const overallColor = allZero ? 'green' : statuses.includes('red') ? 'red' : 'orange';
+            const cardClass = overallColor === 'green' ? 'card-green' : overallColor === 'red' ? 'card-red' : 'card-orange';
+            const barCol = overallColor === 'green' ? '#059669' : overallColor === 'red' ? '#e63560' : '#d97706';
+            return `<div class="student-card ${cardClass}" data-student-id="${s.id}">
               <div class="student-card-left">
-                <div class="status-bar" style="background:${col}"></div>
+                <div class="status-bar" style="background:${barCol}"></div>
                 <div>
                   <div class="student-name">${escHtml(s.name)}</div>
                   <div class="student-stats">
